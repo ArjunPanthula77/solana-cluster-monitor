@@ -1,0 +1,100 @@
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px auto;
+  max-width: 1400px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 2.5em;
+}
+
+.info {
+  text-align: center;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+.table-container {
+  overflow-x: auto; /* Horizontal scroll for small screens */
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th {
+  background-color: #3498db;
+  color: white;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ecf0f1;
+  color: #2c3e50;
+}
+
+tr:hover {
+  background-color: #f1f3f5;
+  transition: background-color 0.2s;
+}
+
+a {
+  color: #2980b9;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #1a5276;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .App {
+    margin: 10px;
+    padding: 10px;
+  } 
+  th, td {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+  h1 {
+    font-size: 2em;
+  }
+}
