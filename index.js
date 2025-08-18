@@ -16,10 +16,10 @@ let lastProcessedSlot = 0;
 
 async function processSlot(slot) {
   let attempt = 0;
-  const maxAttempts = 5;
-  const baseDelay = 500;
+    const maxAttempts = 5;
+    const baseDelay = 500;
 
-  while (attempt < maxAttempts) {
+    while (attempt < maxAttempts) {
     try {
       console.log(`Processing slot ${slot}...`);
       const block = await connection.getParsedBlock(slot, {
@@ -45,8 +45,8 @@ async function processSlot(slot) {
             if (lamports > 0) {
               console.log(`SOL transfer: ${from} -> ${to}, ${lamports} lamports`);
               ingestTransfer({
-                parent: from,
-                child: to,
+                  parent: from,
+                  child: to,
                 lamports,
                 ts: blockTime,
                 slot: slot,
@@ -89,7 +89,7 @@ async function poll() {
     for (let s = lastProcessedSlot + 1; s <= current; s++) {
       await processSlot(s);
       lastProcessedSlot = s;
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 1s delay between slots
+      await new Promise(resolve => setTimeout(resolve, 1000)); 
     }
     console.log(`Poll cycle completed. Last processed slot: ${lastProcessedSlot}`);
   } catch (e) {
