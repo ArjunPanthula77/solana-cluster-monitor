@@ -28,7 +28,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const response = await axios.get<Cluster[]>('http://localhost:3000/clusters');
+        const response = await axios.get<Cluster[]>('https://solana-cluster-monitor-production.up.railway.app/clusters');
         setClusters(response.data);
         setLoading(false);
       } catch (error) {
@@ -55,7 +55,7 @@ const App: React.FC = () => {
       <h1>Solana Cluster Dashboard</h1>
       <p className="info">
         Live data from API at{' '}
-        <a href="http://localhost:3000/clusters" target="_blank" rel="noopener noreferrer">
+        <a href="https://solana-cluster-monitor-production.up.railway.app/clusters" target="_blank" rel="noopener noreferrer">
           /clusters
         </a>
         . Click wallets/slots/recipients to verify on Solscan.
