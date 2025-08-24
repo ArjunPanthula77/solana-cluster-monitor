@@ -828,7 +828,7 @@
 //   const fetchData = async (): Promise<void> => {
 //     try {
 //       setError('');
-//       const response = await fetch('http://localhost:3001/clusters');
+//       const response = await fetch('https://solana-cluster-monitor-production-82e9.up.railway.app/clusters');
       
 //       if (!response.ok) {
 //         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1227,7 +1227,7 @@ const App: React.FC = () => {
   const fetchData = async (): Promise<void> => {
     try {
       setError('');
-      const response = await fetch('http://localhost:3001/clusters');
+      const response = await fetch('https://solana-cluster-monitor-production-82e9.up.railway.app/clusters');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
