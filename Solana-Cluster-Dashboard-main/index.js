@@ -2,15 +2,15 @@
 // // index.js
 // const { Connection } = require('@solana/web3.js');
 // const { RPC_URL, POLL_INTERVAL_MS, SPEND_REFRESH_MS } = require('./config');
-// const { ingestTransfer, updateBalances, getClusterStats } = require('./cluster');
+// const { ingestTransfer, updateBalances, getClusterStats, detectClusterBehavior } = require('./cluster');
 // const { startApi } = require('./api');
 
 // if (!RPC_URL) {
 //   console.error('Missing RPC_URL in .env - using mainnet default');
 // }
 
-// // Use mainnet-beta for production
-// const connection = new Connection(RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=11fc101f-2e6f-4c67-aa2b-073eaf946b8c', 'confirmed');
+// // Use 'processed' for faster ingestion
+// const connection = new Connection(RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=11fc101f-2e6f-4c67-aa2b-073eaf946b8c', 'processed');
 // console.log('Connected to Solana Mainnet RPC:', RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=11fc101f-2e6f-4c67-aa2b-073eaf946b8c');
 
 // let lastProcessedSlot = 0;
@@ -18,8 +18,8 @@
 // async function processSlot(slot) {
 //   let attempt = 0;
 //   const maxAttempts = 3;
-//   const baseDelay = 1000;
-
+//   const baseDelay = 1000; 
+  
 //   while (attempt < maxAttempts) {
 //     try {
 //       console.log(`Processing slot ${slot}...`);
@@ -43,10 +43,18 @@
 //           continue;
 //         }
 
-//         const ixns = tx.transaction.message.instructions || [];
-        
-//         for (const ix of ixns) {
-//           // Only process SOL transfers via system program
+//         detectClusterBehavior(tx, blockTime, slot);
+
+//         const messageInstructions = tx.transaction.message.instructions || [];
+//         const innerInstructions = tx.meta?.innerInstructions || [];
+
+//         const allInstructions = [...messageInstructions];
+//         for (const inner of innerInstructions) {
+//           allInstructions.push(...inner.instructions);
+//         }
+
+//         let ixIdx = 0;
+//         for (const ix of messageInstructions) {  // Dedupe only on top-level for simplicity
 //           if (ix.program === 'system' && ix.parsed?.type === 'transfer') {
 //             const info = ix.parsed.info;
 //             const from = info.source;
@@ -62,9 +70,12 @@
 //                 lamports,
 //                 ts: blockTime,
 //                 slot: slot,
+//                 signature: tx.transaction.signatures[0],
+//                 ixIdx
 //               });
 //             }
 //           }
+//           ixIdx++;
 //         }
 //       }
 
@@ -86,7 +97,7 @@
 // async function poll() {
 //   try {
 //     console.log('Starting poll cycle...');
-//     const current = await connection.getSlot('confirmed');
+//     const current = await connection.getSlot('processed');
 //     console.log(`Current slot: ${current}`);
 
 //     if (lastProcessedSlot === 0) {
@@ -96,7 +107,7 @@
 //     }
 
 //     // Process missed slots (but limit to prevent overwhelming)
-//     const maxSlotsToProcess = 10;
+//     const maxSlotsToProcess = 20;
 //     const startSlot = Math.max(lastProcessedSlot + 1, current - maxSlotsToProcess);
     
 //     for (let s = startSlot; s <= current; s++) {
@@ -120,7 +131,9 @@
 //   console.log('⚡ REAL-TIME MODE: New clusters appear immediately!');
   
 //   // Start API server
-//   startApi(3001);
+
+//   const port = process.env.port || 3001
+//   startApi(port);
   
 //   // Set up intervals with faster balance updates for real-time data
 //   console.log(`⏱️  Polling every ${POLL_INTERVAL_MS}ms, Balance updates every 15s for real-time data`);
@@ -178,6 +191,9 @@ const connection = new Connection(RPC_URL || 'https://mainnet.helius-rpc.com/?ap
 console.log('Connected to Solana Mainnet RPC:', RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=11fc101f-2e6f-4c67-aa2b-073eaf946b8c');
 
 let lastProcessedSlot = 0;
+let pollInterval = null;
+let balanceInterval = null;
+let isPollingStarted = false;
 
 async function processSlot(slot) {
   let attempt = 0;
@@ -289,23 +305,33 @@ async function poll() {
   }
 }
 
-async function start() {
+async function startPolling() {
+  if (isPollingStarted) {
+    console.log('Polling already started, skipping initialization.');
+    return;
+  }
+
   console.log('🚀 Starting Solana Cluster Monitor for MAINNET...');
   console.log('📊 Requirements: ≥5 children, ≥20 SOL total, ≥1 SOL per transfer, 10s detection window');
   console.log('⚡ REAL-TIME MODE: New clusters appear immediately!');
   
-  // Start API server
+  isPollingStarted = true;
 
-  const port = process.env.port || 3001
-  startApi(port);
+  // Initial poll run
+  await poll();
   
-  // Set up intervals with faster balance updates for real-time data
-  console.log(`⏱️  Polling every ${POLL_INTERVAL_MS}ms, Balance updates every 15s for real-time data`);
+  // Set up polling interval
+  pollInterval = setInterval(poll, POLL_INTERVAL_MS);
   
-  const pollInterval = setInterval(poll, POLL_INTERVAL_MS);
-  
-  // Update balances every 15 seconds for faster real-time data
-  const balanceInterval = setInterval(() => {
+  // Initial balance update after 5 seconds to let some data accumulate
+  setTimeout(async () => {
+    console.log('🎯 Running initial balance update...');
+    await updateBalances(connection);
+  }, 5000);
+
+  // Set up balance update interval
+  console.log(`⏱️ Polling every ${POLL_INTERVAL_MS}ms, Balance updates every 15s for real-time data`);
+  balanceInterval = setInterval(() => {
     console.log('🔄 Starting real-time balance update...');
     updateBalances(connection)
       .then(() => {
@@ -314,23 +340,21 @@ async function start() {
       })
       .catch(err => console.error('❌ Balance update failed:', err.message));
   }, 15000); // 15 seconds for faster updates
+}
 
-  // Initial run
-  await poll();
+async function start() {
+  const port = process.env.PORT || 3001;
   
-  // Initial balance update after 5 seconds to let some data accumulate
-  setTimeout(async () => {
-    console.log('🎯 Running initial balance update...');
-    await updateBalances(connection);
-  }, 5000);
+  // Pass the startPolling function to the API so it can be triggered on /clusters request
+  startApi(port, startPolling);
   
-  console.log('✅ Real-time monitor started successfully!');
+  console.log('✅ API server started, waiting for /clusters request to begin polling.');
   
   // Graceful shutdown
   process.on('SIGINT', () => {
     console.log('🛑 Shutting down gracefully...');
-    clearInterval(pollInterval);
-    clearInterval(balanceInterval);
+    if (pollInterval) clearInterval(pollInterval);
+    if (balanceInterval) clearInterval(balanceInterval);
     process.exit(0);
   });
 }

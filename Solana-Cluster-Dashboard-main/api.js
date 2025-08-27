@@ -1,28 +1,5 @@
-// // const express = require('express');
-// // const { serializeClusters } = require('./cluster');
-// // const cors = require('cors');
 
-// // function startApi(port = 3001) { // Changed to 3001 to avoid conflict with React
-// //   const app = express();
-
-// //   // Enable CORS for requests from localhost:3000
-// //   app.use(cors());
-
-// //   app.get('/health', (_req, res) => res.json({ ok: true }));
-
-// //   app.get('/clusters', (_req, res) => {
-// //     const clusters = serializeClusters();
-// //     console.log(`API /clusters request served with ${clusters.length} clusters`);
-// //     res.json(clusters);
-// //   });
-
-// //   app.listen(port, () => {
-// //     console.log(`API listening on http://localhost:${port}`);
-// //   });
-// // }
-
-// // module.exports = { startApi };
-
+// // api.js
 // const express = require('express');
 // const { serializeClusters, getClusterStats } = require('./cluster');
 // const cors = require('cors');
@@ -96,8 +73,10 @@
 //   });
 
 //   // Start server
+
+
 //   const server = app.listen(port, () => {
-//     console.log(`🌐 API server listening on http://localhost:${port}`);
+//     console.log(`🌐 API server listening on port ${port}`);
 //     console.log(`📋 Endpoints available:`);
 //     console.log(`   GET /health    - Health check`);
 //     console.log(`   GET /clusters  - Active clusters data`);
@@ -119,7 +98,7 @@ const express = require('express');
 const { serializeClusters, getClusterStats } = require('./cluster');
 const cors = require('cors');
 
-function startApi(port = 3001) {
+function startApi(port = 3001, startPolling) {
   const app = express();
   
   // Enable CORS for all origins (adjust in production)
@@ -140,9 +119,12 @@ function startApi(port = 3001) {
     });
   });
 
-  // Main clusters endpoint with enhanced logging
-  app.get('/clusters', (_req, res) => {
+  // Main clusters endpoint with enhanced logging and polling trigger
+  app.get('/clusters', async (_req, res) => {
     try {
+      // Start polling if not already started
+      await startPolling(); // Fixed: Changed 'start polling' to 'startPolling'
+      
       const clusters = serializeClusters();
       const stats = getClusterStats();
       
@@ -188,8 +170,6 @@ function startApi(port = 3001) {
   });
 
   // Start server
-
-
   const server = app.listen(port, () => {
     console.log(`🌐 API server listening on port ${port}`);
     console.log(`📋 Endpoints available:`);

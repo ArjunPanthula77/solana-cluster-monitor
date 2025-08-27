@@ -50,7 +50,7 @@ const App: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://solana-cluster-monitor-gyw7.onrender.com/clusters');
+      const response = await fetch('http://localhost:3001/clusters');
       if (!response.ok) {
         throw new Error('Failed to fetch clusters');
       }
