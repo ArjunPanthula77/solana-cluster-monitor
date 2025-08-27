@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { lookup } from 'dns';
+
 
 interface Cluster {
   funding_wallet: string;
