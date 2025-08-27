@@ -188,8 +188,10 @@ function startApi(port = 3001) {
   });
 
   // Start server
+
+
   const server = app.listen(port, () => {
-    console.log(`🌐 API server listening on http://localhost:${port}`);
+    console.log(`🌐 API server listening on port ${port}`);
     console.log(`📋 Endpoints available:`);
     console.log(`   GET /health    - Health check`);
     console.log(`   GET /clusters  - Active clusters data`);

@@ -295,7 +295,9 @@ async function start() {
   console.log('⚡ REAL-TIME MODE: New clusters appear immediately!');
   
   // Start API server
-  startApi(3001);
+
+  const port = process.env.port || 3001
+  startApi(port);
   
   // Set up intervals with faster balance updates for real-time data
   console.log(`⏱️  Polling every ${POLL_INTERVAL_MS}ms, Balance updates every 15s for real-time data`);

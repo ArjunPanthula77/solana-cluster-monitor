@@ -546,6 +546,7 @@ async function updateBalances(connection) {
           break;
         }
       }
+    
       
       if (earliestInWindow) {
         balThen += earliestInWindow.bal;
