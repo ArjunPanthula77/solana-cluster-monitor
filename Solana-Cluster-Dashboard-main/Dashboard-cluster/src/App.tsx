@@ -137,7 +137,7 @@ const App: React.FC = () => {
             ) : (
               filteredClusters.map((cluster, index) => (
                 <tr key={index} className="cluster-row">
-                  <td>{cluster.funding_wallet.slice(0, 6)}...{cluster.funding_wallet.slice(-4)}</td>
+                  <td>{cluster.funding_wallet}</td>
                   <td>
                     {cluster.children_count}{' '}
                     <button
