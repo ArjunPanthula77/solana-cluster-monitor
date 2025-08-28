@@ -1,7 +1,7 @@
 /* src/App.css */
 .app {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1400px; /* Increased for wider table */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f0f4f8;
@@ -33,7 +33,7 @@
 
 .search-input {
   padding: 10px;
-  width: 60%;
+  width: 50%;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1em;
@@ -41,11 +41,40 @@
 
 .status-filter {
   padding: 10px;
-  width: 35%;
+  width: 25%;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1em;
   background-color: white;
+}
+
+.polling-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 12.5%;
+}
+
+.polling-btn.active {
+  background-color: #28a745;
+  color: white;
+}
+
+.polling-btn.stop {
+  background-color: #dc3545;
+  color: white;
+}
+
+.polling-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.polling-btn:not(:disabled):hover {
+  filter: brightness(85%);
 }
 
 .table-container {
@@ -107,7 +136,7 @@
   text-align: center;
   font-size: 1.2em;
   color: #888;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 .error {
@@ -172,7 +201,6 @@
   padding: 8px;
   border-bottom: 1px solid #eee;
   font-size: 0.9em;
-  
 }
 
 .child-address:last-child {
