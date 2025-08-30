@@ -725,7 +725,7 @@ const App: React.FC = () => {
   const [isPolling, setIsPolling] = useState(false);
   const [pollInterval, setPollInterval] = useState<NodeJS.Timeout | null>(null);
 
-  const API_BASE = 'https://solana-cluster-monitor.onrender.com';
+  const API_BASE = 'http://localhost:3001';
 
   const fetchData = async () => {
     try {
