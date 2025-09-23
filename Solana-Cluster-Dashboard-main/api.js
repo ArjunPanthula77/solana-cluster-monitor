@@ -553,7 +553,7 @@ const cookieParser = require('cookie-parser');
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 
 const pool = new Pool({
-  connectionString: "postgresql://just_for_example_user:Mp5tmt8AeI3n9Ab37IMvUEQKtTrwjiq8@dpg-d396r90dl3ps73almb80-a.oregon-postgres.render.com/just_for_example",
+  connectionString: "postgresql://just_for_example_user:Mp5tmt8AeI3n9Ab37IMvUEQKtTrwjiq8@dpg-d396r90dl3ps73almb80-a/just_for_example",
 });
 
 // 🔹 Initialize DB tables if not exist
