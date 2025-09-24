@@ -579,7 +579,17 @@ function startApi(port = 3001, startPolling, stopPolling) {
 
   const app = express();
   
-  app.use(cors());
+  // app.use(cors());
+
+
+  const allowedOrigin = "https://cluster-dashboard-nine.vercel.app"; // your frontend URL
+
+app.use(cors({
+  origin: allowedOrigin, // cannot be '*'
+  credentials: true,     // allows cookies to be sent
+}));
+
+  
   app.use(express.json());
   app.use(cookieParser());
 
