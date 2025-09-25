@@ -553,7 +553,7 @@ const cookieParser = require('cookie-parser');
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 
 const pool = new Pool({
-  connectionString: "postgresql://just_for_example_user:Mp5tmt8AeI3n9Ab37IMvUEQKtTrwjiq8@dpg-d396r90dl3ps73almb80-a/just_for_example",
+  connectionString: "postgresql://adepin:watchad@localhost:5432/ads",
 });
 
 // 🔹 Initialize DB tables if not exist
@@ -579,17 +579,7 @@ function startApi(port = 3001, startPolling, stopPolling) {
 
   const app = express();
   
-  // app.use(cors());
-
-
-  const allowedOrigin = "https://cluster-dashboard-nine.vercel.app"; // your frontend URL
-
-app.use(cors({
-  origin: allowedOrigin, // cannot be '*'
-  credentials: true,     // allows cookies to be sent
-}));
-
-  
+  app.use(cors());
   app.use(express.json());
   app.use(cookieParser());
 
